@@ -1399,6 +1399,172 @@ static void init_cur_imgy(VideoParameters *p_Vid,Slice *currSlice,int pl)
  ************************************************************************
  */
 
+void outputMBYPlane(imgpel*** YPlane)
+{
+    for(int i = 0; i < 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            printf(" %5d", YPlane[0][i][j]);
+            if ((j + 1) % 8 == 0) {
+                printf("    ");
+            }
+        }
+        printf("\n");
+        
+        if ( (i + 1) % 8 == 0) {
+            for (int j = 0; j < 16; j++) {
+                printf("       ");
+            }
+            printf("\n");
+        }
+    }
+}
+
+void outputMBUVPlane(imgpel *** UVPlane, int pl)
+{
+    for(int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            printf(" %5d", UVPlane[pl + 1][i][j]);
+            if ((j + 1) % 4 == 0) {
+                printf("    ");
+            }
+        }
+        printf("\n");
+        
+        if ( (i + 1) % 4 == 0) {
+            for (int j = 0; j < 8; j++) {
+                printf("       ");
+            }
+            printf("\n");
+        }
+    }
+}
+
+void outputResidulY(Macroblock *currMB, StorablePicture *dec_picture)
+{
+    Slice *currSlice = currMB->p_Slice;
+    
+    for(int i = 0; i < 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            printf(" %5d", dec_picture->imgY[currMB->pix_y + i][currMB->pix_x + j] - currSlice->mb_pred[0][i][j]);
+            if ((j + 1) % 8 == 0) {
+                printf("    ");
+            }
+        }
+        printf("\n");
+        
+        if ( (i + 1) % 8 == 0) {
+            for (int j = 0; j < 16; j++) {
+                printf("      ");
+            }
+            printf("\n");
+        }
+    }
+}
+
+void outputResidulUV(Macroblock *currMB, StorablePicture *dec_picture, int pl)
+{
+    Slice *currSlice = currMB->p_Slice;
+    
+    for(int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            printf(" %5d", dec_picture->imgUV[pl][currMB->pix_c_y + i][currMB->pix_c_x + j] - currSlice->mb_pred[pl + 1][i][j]);
+            if ((j + 1) % 4 == 0) {
+                printf("    ");
+            }
+        }
+        printf("\n");
+        
+        if ( (i + 1) % 4 == 0) {
+            for (int j = 0; j < 8; j++) {
+                printf("      ");
+            }
+            printf("\n");
+        }
+    }
+}
+
+void outputMBYPlaneImg(Macroblock *currMB, StorablePicture *dec_picture)
+{
+    for(int i = 0; i < 16; i++) {
+        
+        for (int j = 0; j < 16; j++) {
+            printf(" %5d", dec_picture->imgY[currMB->pix_y + i][currMB->pix_x + j]);
+            if ((j + 1) % 8 == 0) {
+                printf("    ");
+            }
+        }
+        printf("\n");
+        
+        if ( (i + 1) % 8 == 0) {
+            for (int j = 0; j < 16; j++) {
+                printf("       ");
+            }
+            printf("\n");
+        }
+    }
+}
+
+void outputMBUVPlaneImg(Macroblock *currMB, StorablePicture *dec_picture, int pl)
+{
+    for(int i = 0; i < 8; i++) {
+        
+        for (int j = 0; j < 8; j++) {
+            printf(" %5d", dec_picture->imgUV[pl][currMB->pix_c_y + i][currMB->pix_c_x + j]);
+            if ((j + 1) % 4 == 0) {
+                printf("    ");
+            }
+        }
+        printf("\n");
+        
+        if ( (i + 1) % 4 == 0) {
+            for (int j = 0; j < 16; j++) {
+                printf("       ");
+            }
+            printf("\n");
+        }
+    }
+}
+
+void outputMBinfo(Macroblock *currMB, StorablePicture *dec_picture)
+{
+    Slice *currSlice = currMB->p_Slice;
+    
+        printf("\n**************** Y pred *****************\n");
+        outputMBYPlane(currSlice->mb_pred);
+
+        printf("\n**************** Y res *****************\n");
+        outputResidulY(currMB, dec_picture);
+
+//        printf("\n**************** Y rec *****************\n");
+//        outputMBYPlane(currSlice->mb_rec);
+//
+        printf("\n**************** Y rec *****************\n");
+        outputMBYPlaneImg(currMB, dec_picture);
+    
+    for(int pl = 0; pl < 2; pl++)
+    {
+        if (pl == 0) {
+            printf("\n**************** U *****************\n");
+        } else {
+            printf("\n**************** V *****************\n");
+        }
+
+        printf("\n**************** UV pred *****************\n");
+        outputMBUVPlane(currSlice->mb_pred, pl);
+
+        printf("\n**************** UV res *****************\n");
+        outputResidulUV(currMB, dec_picture, pl);
+
+//        printf("\n**************** UV rec *****************\n");
+//        outputMBUVPlane(currSlice->mb_rec, pl);
+
+        printf("\n**************** UV rec *****************\n");
+        outputMBUVPlaneImg(currMB, dec_picture, pl);
+    }
+    
+    printf("\n");
+}
+
 int decode_one_macroblock(Macroblock *currMB, StorablePicture *dec_picture)
 {
   Slice *currSlice = currMB->p_Slice;
@@ -1428,6 +1594,13 @@ int decode_one_macroblock(Macroblock *currMB, StorablePicture *dec_picture)
   else
   {
     currSlice->decode_one_component(currMB, PLANE_Y, dec_picture->imgY, dec_picture);
+    
+      if (currSlice->ThisPOC == 1 && currMB->mbAddrX < 9 && currMB->mbAddrX > 6) {
+          outputMBinfo(currMB,  dec_picture);
+      
+          printf(" mbidx=%d, x-y(%d, %d), currMB->skip_fla=%d \n", currMB->mbAddrX, currMB->pix_x, currMB->pix_y, currMB->skip_flag);
+          printf("\n");
+      }
   }
 
   return 0;
