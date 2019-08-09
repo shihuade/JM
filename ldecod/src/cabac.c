@@ -2117,8 +2117,20 @@ void readRunLevel_CABAC (Macroblock *currMB,
 
       //===== decode significant coefficients =====
       read_significant_coefficients    (dep_dp, currSlice->tex_ctx, se->context, coeff);
+        printf("        ");
+        for(int i = 0; i < maxpos[se->context]; i++) {
+            printf(" %3d, ", coeff[i]);
+        }
+        printf("\n\n");
+        
+    }
+    else {
+        printf("          ==>cbf == 0 \n\n");
     }
   }
+    
+   
+
 
   //--- set run and level ---
   if (*coeff_ctr)

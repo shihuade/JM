@@ -62,6 +62,7 @@ static void read_comp_coeff_4x4_smb_CABAC (Macroblock *currMB, SyntaxElement *cu
 
     for (i = block_x; i < block_x + BLOCK_SIZE_8x8; i += 4)
     {
+      printf("       *********sub 4x4 coef, blck[%d][%d] idx=%d  *******\n", i, j,  (j / 8 * 8) + (i / 8) * 4 + (j % 8) / 4 * 2 + (i %8) / 4);
       currMB->subblock_x = i; // position for coeff_count ctx
       pos_scan_4x4 = pos_scan4x4[start_scan];
       level = 1;
@@ -87,6 +88,8 @@ static void read_comp_coeff_4x4_smb_CABAC (Macroblock *currMB, SyntaxElement *cu
         else
           sprintf(currSE->tracestring, "Cr   sng ");  
 #endif
+
+//        printf("\n ==============Luma 4x4: blckIdx[%d],  \n", , b4);
 
         dP->readSyntaxElement(currMB, currSE, dP);
         level = currSE->value1;
@@ -174,6 +177,7 @@ static void read_comp_coeff_4x4_CABAC (Macroblock *currMB, SyntaxElement *currSE
     int **cof = &currSlice->cof[pl][block_y];
     for (block_x = 0; block_x < MB_BLOCK_SIZE; block_x += BLOCK_SIZE_8x8)
     {
+      printf("     -------luma coef, [%d][%d] ------- cbp=%d, \n", block_y, block_x, cbp & (1 << ((block_y >> 2) + (block_x >> 3))));
       if (cbp & (1 << ((block_y >> 2) + (block_x >> 3))))  // are there any coeff in current block at all
       {
         read_comp_coeff_4x4_smb_CABAC (currMB, currSE, pl, block_y, block_x, start_scan, cbp_blk);
@@ -673,11 +677,14 @@ static void read_CBP_and_coeffs_from_NAL_CABAC_420(Macroblock *currMB)
 
       level = 1;                            // just to get inside the loop
 
+      printf("\n ******** luma Intra 16x16 **********\n");
       for(k = 0; (k < 17) && (level != 0); ++k)
       {
 #if TRACE
         snprintf(currSE.tracestring, TRACESTRING_SIZE, "DC luma 16x16 ");
 #endif
+        printf(" ******** luma Intra 16x16 DC+AC[%d]**********\n", k);
+
         dP->readSyntaxElement(currMB, &currSE, dP);
         level = currSE.value1;
 
@@ -705,7 +712,9 @@ static void read_CBP_and_coeffs_from_NAL_CABAC_420(Macroblock *currMB)
 
   // luma coefficients
   //======= Other Modes & CABAC ========
-  //------------------------------------          
+  //------------------------------------
+  printf(" ******** luma coefficients \n");
+
   if (cbp)
   {
     if(currMB->luma_transform_size_8x8_flag) 
@@ -756,6 +765,8 @@ static void read_CBP_and_coeffs_from_NAL_CABAC_420(Macroblock *currMB)
       else
         currSE.reading = readRunLevel_CABAC;
 
+    
+      printf("\n *********CHROMA DC: uv=%d \n", uv);
       for(k = 0; (k < (p_Vid->num_cdc_coeff + 1))&&(level!=0);++k)
       {
 #if TRACE
@@ -852,6 +863,8 @@ static void read_CBP_and_coeffs_from_NAL_CABAC_420(Macroblock *currMB)
 
           pos_scan_4x4 = pos_scan4x4[1];
           level = 1;
+
+          printf("\n ==============CHROMA AC: uv=%d blckIdx[%d],  \n", uv, b4);
 
           for(k = 0; (k < 16) && (level != 0);++k)
           {

@@ -2519,6 +2519,7 @@ void decode_one_slice(Slice *currSlice)
     // Initializes the current macroblock
     start_macroblock(currSlice, &currMB);
     // Get the syntax elements from the NAL
+      printf("\n\n **************** poc=%d, Mb idx=%d *********************\n\n", currSlice->ThisPOC, currMB->mbAddrX);
     currSlice->read_one_macroblock(currMB);
     decode_one_macroblock(currMB, currSlice->dec_picture);
 
