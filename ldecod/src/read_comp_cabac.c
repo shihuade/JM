@@ -791,7 +791,9 @@ static void read_CBP_and_coeffs_from_NAL_CABAC_420(Macroblock *currMB)
 
           assert (coef_ctr < p_Vid->num_cdc_coeff);
           currSlice->cofu[coef_ctr] = level;
+//            printf("         cofu[%d] = %d ", coef_ctr, level);
         }
+//          printf("\n");
       }
 
 
@@ -884,9 +886,11 @@ static void read_CBP_and_coeffs_from_NAL_CABAC_420(Macroblock *currMB)
               j0 = *pos_scan_4x4++;
 
               cof[(j<<2) + j0][(i<<2) + i0] = rshift_rnd_sf((level * InvLevelScale4x4[j0][i0])<<qp_per_uv[uv], 4);
+//                printf("   cof[%d][%d]=%d ",  (j<<2) + j0, (i<<2) + i0, cof[(j<<2) + j0][(i<<2) + i0]);
               //currSlice->fcf[uv + 1][(j<<2) + j0][(i<<2) + i0] = level;
             }
           } //for(k=0;(k<16)&&(level!=0);++k)
+//            printf("\n");
         }
       }
     }

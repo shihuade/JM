@@ -2087,8 +2087,11 @@ static void read_significant_coefficients (DecodingEnvironmentPtr  dep_dp,
         *cof = - *cof;
       }
     }
+    
+      printf(" %d", *cof);
     cof--;
   }
+    printf("\n");
 }
 
 
@@ -2106,9 +2109,12 @@ void readRunLevel_CABAC (Macroblock *currMB,
   int  *coeff_ctr = &currSlice->coeff_ctr;
   int  *coeff = currSlice->coeff;
 
+    int flag = 0;
   //--- read coefficients for whole block ---
   if (*coeff_ctr < 0)
   {
+      
+      flag = 1;
     //===== decode CBP-BIT =====
     if ((*coeff_ctr = currMB->read_and_store_CBP_block_bit (currMB, dep_dp, se->context) ) != 0)
     {
@@ -2117,16 +2123,15 @@ void readRunLevel_CABAC (Macroblock *currMB,
 
       //===== decode significant coefficients =====
       read_significant_coefficients    (dep_dp, currSlice->tex_ctx, se->context, coeff);
-        printf("        ");
-        for(int i = 0; i < maxpos[se->context]; i++) {
-            printf(" %3d, ", coeff[i]);
-        }
-        printf("\n\n");
-        
+//        printf("        ");
+//        for(int i = 0; i < maxpos[se->context]; i++) {
+//            printf(" %3d, ", coeff[i]);
+//        }
+//        
     }
-    else {
-        printf("          ==>cbf == 0 \n\n");
-    }
+//    else {
+//        printf("          ==>cbf == 0");
+//    }
   }
     
    
@@ -2147,6 +2152,10 @@ void readRunLevel_CABAC (Macroblock *currMB,
   //--- decrement coefficient counter and re-set position ---
   if ((*coeff_ctr)-- == 0) 
     currSlice->pos = 0;
+
+    if (flag == 1) {
+        printf("     ==>run=%d, level=%d, \n\n", se->value2, se->value1);
+    }
 
 #if TRACE
   fprintf(p_Dec->p_trace, "@%-6d %-53s %3d  %3d\n",symbolCount++, se->tracestring, se->value1,se->value2);
