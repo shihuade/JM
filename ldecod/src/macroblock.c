@@ -1565,6 +1565,44 @@ void outputMBinfo(Macroblock *currMB, StorablePicture *dec_picture)
     printf("\n");
 }
 
+void outputDecquantCoef(Macroblock *currMB)
+{
+    printf("******* Dequant Y ***********\n");
+    for (int i = 0; i < MB_BLOCK_SIZE; i++) {
+        for (int j = 0; j < MB_BLOCK_SIZE; j++) {
+            printf(" %4d, ", currMB->p_Slice->cof[0][i][j]);
+            if ((j+1) %4 ==0) {
+                printf("     ");
+            }
+        }
+        printf("\n");
+        if ((i+1) %4 ==0) {
+            printf("\n");
+        }
+        
+    }
+    
+    for (int uv = 0; uv < 2; uv++) {
+        if (uv == 0) {
+            printf("******* Dequant U ***********\n");
+        } else {
+            printf("******* Dequant V ***********\n");
+        }
+        for (int i = 0; i < BLOCK_SIZE_8x8; i++) {
+            for (int j = 0; j < BLOCK_SIZE_8x8; j++) {
+                printf(" %4d, ", currMB->p_Slice->cof[uv + 1][i][j]);
+                if ((j+1) %4 ==0) {
+                    printf("     ");
+                }
+            }
+            printf("\n");
+            if ((i+1) %4 ==0) {
+                printf("\n");
+            }
+        }
+    }
+}
+
 int decode_one_macroblock(Macroblock *currMB, StorablePicture *dec_picture)
 {
   Slice *currSlice = currMB->p_Slice;
@@ -1594,6 +1632,8 @@ int decode_one_macroblock(Macroblock *currMB, StorablePicture *dec_picture)
   else
   {
     currSlice->decode_one_component(currMB, PLANE_Y, dec_picture->imgY, dec_picture);
+    
+    outputDecquantCoef(currMB);
     
       if (currSlice->ThisPOC == 1 && currMB->mbAddrX < 9 && currMB->mbAddrX > 6) {
           outputMBinfo(currMB,  dec_picture);

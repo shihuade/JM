@@ -38,7 +38,6 @@
 extern int  get_colocated_info_8x8 (Macroblock *currMB, StorablePicture *list1, int i, int j);
 extern int  get_colocated_info_4x4 (Macroblock *currMB, StorablePicture *list1, int i, int j);
 
-
 int mb_pred_intra4x4(Macroblock *currMB, ColorPlane curr_plane, imgpel **currImg, StorablePicture *dec_picture)
 {
   Slice *currSlice = currMB->p_Slice;
@@ -96,6 +95,7 @@ int mb_pred_intra16x16(Macroblock *currMB, ColorPlane curr_plane, StorablePictur
   // =============== 4x4 itrans ================
   // -------------------------------------------
   iMBtrans4x4(currMB, curr_plane, 0);
+    
 
   // chroma decoding *******************************************************
   if ((dec_picture->chroma_format_idc != YUV400) && (dec_picture->chroma_format_idc != YUV444)) 

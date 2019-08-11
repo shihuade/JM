@@ -83,7 +83,7 @@ void inverse4x4(int **tblock, int **block, int pos_y, int pos_x)
     t1 = *(pblock++);
     t2 = *(pblock++);
     t3 = *(pblock  );
-
+      
     p0 =  t0 + t2;
     p1 =  t0 - t2;
     p2 = (t1 >> 1) - t3;
