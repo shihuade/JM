@@ -1631,15 +1631,18 @@ int decode_one_macroblock(Macroblock *currMB, StorablePicture *dec_picture)
   }
   else
   {
-    currSlice->decode_one_component(currMB, PLANE_Y, dec_picture->imgY, dec_picture);
     
-    outputDecquantCoef(currMB);
+//    outputDecquantCoef(currMB);
     
-      if (currSlice->ThisPOC == 1 && currMB->mbAddrX < 9 && currMB->mbAddrX > 6) {
+      if (currSlice->ThisPOC < 4 && currMB->mbAddrX < 3 && currMB->mbAddrX >= 0) {
+          currSlice->decode_one_component(currMB, PLANE_Y, dec_picture->imgY, dec_picture);
+
           outputMBinfo(currMB,  dec_picture);
       
           printf(" mbidx=%d, x-y(%d, %d), currMB->skip_fla=%d \n", currMB->mbAddrX, currMB->pix_x, currMB->pix_y, currMB->skip_flag);
           printf("\n");
+      }  else {
+          currSlice->decode_one_component(currMB, PLANE_Y, dec_picture->imgY, dec_picture);
       }
   }
 

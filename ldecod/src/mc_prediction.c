@@ -99,6 +99,43 @@ static void weighted_mc_prediction(imgpel **mb_pred,
  *    block bi-prediction
  ************************************************************************
  */
+
+void OutputBiLxPredInfo(imgpel **block_l0,int block_size_y, int block_size_x)
+{
+    int ii, jj;
+    int row_inc = MB_BLOCK_SIZE - block_size_x;
+    
+    imgpel *b0 = block_l0[0];
+    for(jj = 0;jj < block_size_y;jj++)
+    {
+        for(ii = 0; ii < block_size_x; ii++)
+        {
+            printf(" %3d, ", *(b0++));
+        }
+        printf("\n");
+        b0  += row_inc;
+    }
+    printf("\n");
+}
+
+void OutputBiL0l1PredInfo(imgpel **mb_pred,int block_size_y, int block_size_x, int ioff)
+{
+    int ii, jj;
+    int row_inc = MB_BLOCK_SIZE - block_size_x;
+    
+    imgpel *mpr = &mb_pred[0][ioff];
+    for(jj = 0;jj < block_size_y;jj++)
+    {
+        for(ii = 0; ii < block_size_x; ii++)
+        {
+            printf(" %3d, ", *(mpr++));
+        }
+        printf("\n");
+        mpr  += row_inc;
+    }
+    printf("\n");
+}
+
 static void bi_prediction(imgpel **mb_pred, 
                           imgpel **block_l0, 
                           imgpel **block_l1,
@@ -1721,7 +1758,20 @@ static void perform_mc_bi(Macroblock *currMB, ColorPlane pl, StorablePicture *de
   }
   else
     get_block_luma(list1, vec2_x, vec2_y, block_size_x, block_size_y, tmp_block_l1,shift_x,maxold_x,maxold_y,tmp_res,max_imgpel_value,no_ref_value, currMB);
+    
   bi_prediction(&currSlice->mb_pred[pl][joff],tmp_block_l0,tmp_block_l1, block_size_y, block_size_x, ioff); 
+
+    if (currMB->p_Slice->ThisPOC == 1 && currMB->mbAddrX == 2) {
+        printf("\n  L0 pred, ioff=%d \n", ioff);
+        OutputBiLxPredInfo(tmp_block_l0,  block_size_y, block_size_x);
+        
+        printf("\n  L1 pred \n");
+        OutputBiLxPredInfo(tmp_block_l1,  block_size_y, block_size_x);
+        
+        printf("\n  Bi pred \n");
+        OutputBiL0l1PredInfo(&currSlice->mb_pred[pl][joff],  block_size_y, block_size_x, ioff);
+        printf("\n");
+    }
 
   if ((chroma_format_idc != YUV400) && (chroma_format_idc != YUV444) ) 
   {
