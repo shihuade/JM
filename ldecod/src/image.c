@@ -2486,6 +2486,8 @@ void decode_one_slice(Slice *currSlice)
   Macroblock *currMB = NULL;
   currSlice->cod_counter=-1;
 
+    printf("\n\n **************** new slice, poc=%d type=%d ***************\n\n", currSlice->ThisPOC, currSlice->slice_type);
+
   if( (p_Vid->separate_colour_plane_flag != 0) )
   {
     change_plane_JV( p_Vid, currSlice->colour_plane_id, currSlice );
@@ -2519,6 +2521,9 @@ void decode_one_slice(Slice *currSlice)
     // Initializes the current macroblock
     start_macroblock(currSlice, &currMB);
     // Get the syntax elements from the NAL
+      
+    printf("\n******* MBIdx=%d (%d, %d) **********\n",currMB->mbAddrX, currMB->pix_x, currMB->pix_y);
+
     currSlice->read_one_macroblock(currMB);
     decode_one_macroblock(currMB, currSlice->dec_picture);
 

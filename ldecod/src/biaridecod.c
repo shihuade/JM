@@ -168,6 +168,8 @@ unsigned int biari_decode_symbol(DecodingEnvironment *dep, BiContextType *bi_ct 
   unsigned int rLPS   = rLPS_table_64x4[*state][(*range>>6) & 0x03];
   int *DbitsLeft = &dep->DbitsLeft;
 
+  printf("Cabac engine: range=%d, rangeLps=%d\n", *range, rLPS);
+
   *range -= rLPS;
 
   if(*value < (*range << *DbitsLeft))   //MPS
