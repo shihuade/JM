@@ -1634,7 +1634,7 @@ int decode_one_macroblock(Macroblock *currMB, StorablePicture *dec_picture)
     
 //    outputDecquantCoef(currMB);
     
-      if (currSlice->ThisPOC < 4 && currMB->mbAddrX < 3 && currMB->mbAddrX >= 0) {
+      if (currSlice->ThisPOC == 3 && currMB->pix_x == 128 && currMB->pix_y == 224) {
           currSlice->decode_one_component(currMB, PLANE_Y, dec_picture->imgY, dec_picture);
 
           outputMBinfo(currMB,  dec_picture);
